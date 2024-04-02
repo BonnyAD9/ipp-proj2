@@ -5,21 +5,11 @@ namespace IPP\Student;
 use IPP\Core\AbstractInterpreter;
 use IPP\Core\Exception\NotImplementedException;
 
-class Interpreter extends AbstractInterpreter
-{
-    private Frame $globalFrame;
-    private Frame|null $temporaryFrame;
-    private Frame|null $localFrame;
-    /**
-     * @var array<int, Frame>
-     */
-    private array $localFrames;
+class Interpreter extends AbstractInterpreter {
+    private Memory $memory;
 
     public function execute(): int {
-        $this->globalFrame = new Frame();
-        $this->temporaryFrame = null;
-        $this->localFrame = null;
-        $this->localFrames = [];
+        $this->memory = new Memory();
 
         // TODO: Start your code here
         // Check \IPP\Core\AbstractInterpreter for predefined I/O objects:

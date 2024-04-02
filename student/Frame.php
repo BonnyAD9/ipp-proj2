@@ -3,9 +3,7 @@
 namespace IPP\Student;
 
 class Frame {
-    /**
-     *@var array<string, Variable>
-     */
+    /** @var array<string, Literal> */
     public array $variables;
 
     public function __construct() {
@@ -13,10 +11,16 @@ class Frame {
     }
 
     public function getVariable(string $name) {
-        return $this->variables[$name];
+        if (isset($this->variables[$name])) {
+            return $this->variables[$name];
+        }
+        throw new InterpreterException(
+            "Cannot read variable ".$name.". There is no such variable",
+            54
+        );
     }
 
-    public function setVariable(Variable $value) {
-        $this->variables[$value->name] = $value;
+    public function setVariable(string $name, Literal $value) {
+        $this->variables[$name] = $value;
     }
 }
