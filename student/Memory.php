@@ -26,6 +26,14 @@ class Memory {
         $this->globalFrame->setVariable($name, $value);
     }
 
+    public function declGlobal(string $name): void {
+        $this->globalFrame->declVariable($name);
+    }
+
+    public function isDeclGlobal(string $name): bool {
+        return $this->globalFrame->isDecl($name);
+    }
+
     public function makeTmp() {
         $this->temporaryFrame = new Frame();
     }
@@ -52,6 +60,23 @@ class Memory {
             );
         }
         $this->temporaryFrame->setVariable($name, $value);
+    }
+
+    public function declTmp(string $name): void {
+        if ($this->temporaryFrame === null) {
+            throw new InterpreterException(
+                "Cannot declare variable "
+                    .$name
+                    ." in temporary frame. Temporary frame is not set.",
+                55
+            );
+        }
+        $this->temporaryFrame->declVariable($name);
+    }
+
+    public function isDeclTmp(string $name): bool {
+        return $this->temporaryFrame !== null
+            && $this->temporaryFrame->isDecl($name);
     }
 
     public function pushLocal(): void {
@@ -99,6 +124,23 @@ class Memory {
         end($this->localFrames)->setVariable($name, $value);
     }
 
+    public function declLocal(string $name): void {
+        if (count($this->localFrames) === 0) {
+            throw new InterpreterException(
+                "Cannot declare variable "
+                    .$name
+                    ." from local frame. There is no local frame",
+                55
+            );
+        }
+        end($this->localFrames)->declVariable($name);
+    }
+
+    public function isDeclLocal(string $name): bool {
+        return count($this->localFrames) !== 0
+            && end($this->localFrames)->isDecl($name);
+    }
+
     public function popVar(): Literal {
         if (count($this->stack) === 0) {
             throw new InterpreterException(
@@ -120,6 +162,46 @@ class Memory {
                 return $this->getLocal($name->name);
             case FrameType::Temporary:
                 return $this->getTmp($name->name);
+        }
+        throw new InterpreterException("Invalid variable frame");
+    }
+
+    public function setVar(Variable $name, Literal $value): void {
+        switch ($name->frame) {
+            case FrameType::Global:
+                $this->setGlobal($name->name, $value);
+            case FrameType::Local:
+                $this->setLocal($name->name, $value);
+                break;
+            case FrameType::Temporary:
+                $this->setTmp($name->name, $value);
+                break;
+        }
+        throw new InterpreterException("Invalid variable frame");
+    }
+
+    public function declVar(Variable $name): void {
+        switch ($name->frame) {
+            case FrameType::Global:
+                $this->declGlobal($name->name);
+            case FrameType::Local:
+                $this->declLocal($name->name);
+                break;
+            case FrameType::Temporary:
+                $this->declTmp($name->name);
+                break;
+        }
+        throw new InterpreterException("Invalid variable frame");
+    }
+
+    public function isDeclVar(Variable $name): bool {
+        switch ($name->frame) {
+            case FrameType::Global:
+                return $this->isDeclGlobal($name->name);
+            case FrameType::Local:
+                return $this->isDeclLocal($name->name);
+            case FrameType::Temporary:
+                return $this->isDeclTmp($name->name);
         }
         throw new InterpreterException("Invalid variable frame");
     }

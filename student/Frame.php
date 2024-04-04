@@ -21,6 +21,20 @@ class Frame {
     }
 
     public function setVariable(string $name, Literal $value) {
+        if (!isset($this->variables[$name])) {
+            throw new InterpreterException(
+                "Cannot set variable '".$name."'. The variable doesn't exist.",
+                54
+            );
+        }
         $this->variables[$name] = $value;
+    }
+
+    public function declVariable(string $name) {
+        $this->variables[$name] = new Literal(null);
+    }
+
+    public function isDecl(string $name): bool {
+        return isset($this->variables[$name]);
     }
 }
