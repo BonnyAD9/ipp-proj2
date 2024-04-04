@@ -3,19 +3,12 @@
 namespace IPP\Student;
 
 use DOMDocument;
-use DOMNode;
+use DOMElement;
 use Exception;
 
 /** @var array<int, Instruction> */
 function read_instructions(DOMDocument $xml): array {
-    if ($xml->childNodes->count() != 1) {
-        throw new InterpreterException(
-            "Invalid xml, expected only one program.",
-            32
-        );
-    }
-
-    if ($xml->firstChild->nodeName != "program") {
+    if ($xml->firstElementChild->tagName != "program") {
         throw new InterpreterException(
             "Invalid top level node. Expected 'program' but it was '"
                 .$xml->firstChild->nodeName
@@ -24,9 +17,7 @@ function read_instructions(DOMDocument $xml): array {
         );
     }
 
-    if ($xml->firstChild->attributes->getNamedItem("language")->nodeValue
-        != "IPPcode24"
-    ) {
+    if ($xml->firstElementChild->getAttribute("language") != "IPPcode24") {
         throw new InterpreterException(
             "Invalid program language. Expected 'IPPcode24' but it was '"
                 .$xml->firstChild->attributes->getNamedItem("language")->nodeValue
@@ -39,7 +30,13 @@ function read_instructions(DOMDocument $xml): array {
     $insts = [];
     $max = 0;
 
-    foreach ($xml->firstChild->childNodes as $node) {
+    foreach ($xml->firstElementChild->childNodes as $node) {
+        if (!($node instanceof DOMElement)) {
+            throw new InterpreterException(
+                "Expected element nodes inside the node program",
+                32,
+            );
+        }
         $idx = 0;
         $inst = _read_instruction($node, $idx);
         if (isset($insts[$idx])) {
@@ -64,8 +61,8 @@ function read_instructions(DOMDocument $xml): array {
     return $insts;
 }
 
-function _read_instruction(DOMNode $node, int &$order): Instruction {
-    if ($node->nodeName != "instruction") {
+function _read_instruction(DOMElement $node, int &$order): Instruction {
+    if ($node->tagName != "instruction") {
         throw new InterpreterException(
             "Invalid node. Expected 'instruction' but it was '"
                 .$node->nodeName
@@ -74,7 +71,7 @@ function _read_instruction(DOMNode $node, int &$order): Instruction {
         );
     }
 
-    $orderS = $node->attributes->getNamedItem("order")->nodeValue;
+    $orderS = $node->getAttribute("order");
     if (!$orderS) {
         throw new InterpreterException(
             "Invalid instruction, missing order.",
@@ -103,7 +100,7 @@ function _read_instruction(DOMNode $node, int &$order): Instruction {
         );
     }
 
-    $opcode = $node->attributes->getNamedItem("opcode")->nodeValue;
+    $opcode = $node->getAttribute("opcode");
     if (!$opcode) {
         throw new InterpreterException(
             "Invalid instruciton, missing opcode.",
@@ -117,6 +114,12 @@ function _read_instruction(DOMNode $node, int &$order): Instruction {
     $max = 0;
 
     foreach ($node->childNodes as $node) {
+        if (!($node instanceof DOMElement)) {
+            throw new InterpreterException(
+                "Expected element nodes inside of instruction node.",
+                32
+            );
+        }
         $idx = 0;
         $arg = _read_arg($node, $idx);
         if (isset($args[$idx])) {
@@ -143,7 +146,7 @@ function _read_instruction(DOMNode $node, int &$order): Instruction {
     return new Instruction($opcode, $args);
 }
 
-function _read_arg(DOMNode $node, int &$order): Literal|string|Variable {
+function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
     switch ($node->nodeName) {
         case "arg1":
             $order = 0;
@@ -174,17 +177,17 @@ function _read_arg(DOMNode $node, int &$order): Literal|string|Variable {
 
     switch ($type) {
         case "label":
-            return _read_label($node->textContent);
+            return _read_label($node->nodeValue);
         case "var":
-            return _read_var($node->textContent);
+            return _read_var($node->nodeValue);
         case "nil":
-            return _read_nil($node->textContent);
+            return _read_nil($node->nodeValue);
         case "int":
-            return _read_var($node->textContent);
+            return _read_var($node->nodeValue);
         case "bool":
-            return _read_bool($node->textContent);
+            return _read_bool($node->nodeValue);
         case "string":
-            return _read_string($node->textContent);
+            return _read_string($node->nodeValue);
         default:
             throw new InterpreterException(
                 "Invalid argument type. Expected 'label', 'var', 'nil', 'int',"
