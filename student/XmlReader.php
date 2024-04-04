@@ -113,7 +113,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
 
     /** @var array<int, Literal|string|Variable> */
     $args = [];
-    $max = 0;
+    $max = -1;
 
     foreach ($node->childNodes as $node) {
         if (!($node instanceof DOMElement)) {
