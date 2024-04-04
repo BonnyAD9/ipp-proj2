@@ -5,7 +5,6 @@ namespace IPP\Student;
 class Memory {
     private Frame $globalFrame;
     private Frame|null $temporaryFrame;
-    private Frame|null $localFrame;
     /** @var array<int, Frame> */
     private array $localFrames;
     /** @var array<int, Literal> */
@@ -14,7 +13,6 @@ class Memory {
     public function __construct() {
         $this->globalFrame = new Frame();
         $this->temporaryFrame = null;
-        $this->localFrame = null;
         $this->localFrames = [];
         $this->stack = [];
     }
@@ -35,7 +33,7 @@ class Memory {
         return $this->globalFrame->isDecl($name);
     }
 
-    public function makeTmp() {
+    public function makeTmp(): void {
         $this->temporaryFrame = new Frame();
     }
 
@@ -165,7 +163,6 @@ class Memory {
             case FrameType::Temporary:
                 return $this->getTmp($name->name);
         }
-        throw new InterpreterException("Invalid variable frame");
     }
 
     public function setVar(Variable $name, Literal $value): void {
@@ -180,7 +177,6 @@ class Memory {
                 $this->setTmp($name->name, $value);
                 return;
         }
-        throw new InterpreterException("Invalid variable frame");
     }
 
     public function declVar(Variable $name): void {
@@ -195,7 +191,6 @@ class Memory {
                 $this->declTmp($name->name);
                 return;
         }
-        throw new InterpreterException("Invalid variable frame");
     }
 
     public function isDeclVar(Variable $name): bool {
@@ -207,6 +202,5 @@ class Memory {
             case FrameType::Temporary:
                 return $this->isDeclTmp($name->name);
         }
-        throw new InterpreterException("Invalid variable frame");
     }
 }

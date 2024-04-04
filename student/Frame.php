@@ -10,7 +10,7 @@ class Frame {
         $this->variables = [];
     }
 
-    public function getVariable(string $name) {
+    public function getVariable(string $name): Literal {
         if (isset($this->variables[$name])) {
             if ($this->variables[$name]->type == VarType::Unset) {
                 throw new InterpreterException(
@@ -26,7 +26,7 @@ class Frame {
         );
     }
 
-    public function setVariable(string $name, Literal $value) {
+    public function setVariable(string $name, Literal $value): void {
         if (!isset($this->variables[$name])) {
             throw new InterpreterException(
                 "Cannot set variable '".$name."'. The variable doesn't exist.",
@@ -36,7 +36,7 @@ class Frame {
         $this->variables[$name] = $value;
     }
 
-    public function declVariable(string $name) {
+    public function declVariable(string $name): void {
         if (isset($this->variables[$name])) {
             throw new InterpreterException(
                 "Cannot declare variable '".$name."'. It is already declared.",

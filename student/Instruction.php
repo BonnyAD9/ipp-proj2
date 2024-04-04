@@ -7,10 +7,8 @@ class Instruction {
     /** @var array<int, Literal|string|Variable> */
     public array $args;
 
-    public function __construct(
-        OpCode $opcode,
-        /** @var array<int, Literal|string|Variable> */ array $args
-    ) {
+    /** @param array<int, Literal|string|Variable> $args */
+    public function __construct(OpCode $opcode, array $args) {
         $this->opcode = $opcode;
         $this->args = $args;
 
@@ -128,68 +126,68 @@ class Instruction {
         }
     }
 
-    public function validateMove() {
+    public function validateMove(): void {
         $this->checkArgCnt(2);
         $this->checkVar(0);
         $this->checkSymbAny(1);
     }
 
-    public function validateCreateFrame() {
+    public function validateCreateFrame(): void {
         $this->checkArgCnt(0);
     }
 
-    public function validatePushFrame() {
+    public function validatePushFrame(): void {
         $this->checkArgCnt(0);
     }
 
-    public function validatePopFrame() {
+    public function validatePopFrame(): void {
         $this->checkArgCnt(0);
     }
 
-    public function validateDefVar() {
+    public function validateDefVar(): void {
         $this->checkArgCnt(1);
         $this->checkVar(0);
     }
 
-    public function validateCall() {
+    public function validateCall(): void {
         $this->checkArgCnt(1);
         $this->checkLabel(0);
     }
 
-    public function validateReturn() {
+    public function validateReturn(): void {
         $this->checkArgCnt(0);
     }
 
-    public function validatePushS() {
+    public function validatePushS(): void {
         $this->checkArgCnt(1);
         $this->checkSymbAny(0);
     }
 
-    public function validatePopS() {
+    public function validatePopS(): void {
         $this->checkArgCnt(1);
         $this->checkVar(0);
     }
 
-    public function validateAdd() {
+    public function validateAdd(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::Int);
         $this->checkSymb(2, VarType::Int);
     }
 
-    public function validateSub() {
+    public function validateSub(): void {
         $this->validateAdd();
     }
 
-    public function validateMul() {
+    public function validateMul(): void {
         $this->validateAdd();
     }
 
-    public function validateIDiv() {
+    public function validateIDiv(): void {
         $this->validateAdd();
     }
 
-    public function validateLt() {
+    public function validateLt(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymbAny(1);
@@ -199,45 +197,45 @@ class Instruction {
         $this->checkSame(1, 2);
     }
 
-    public function validateGt() {
+    public function validateGt(): void {
         $this->validateLt();
     }
 
-    public function validateEq() {
+    public function validateEq(): void {
         $this->validateLt();
     }
 
-    public function validateAnd() {
+    public function validateAnd(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::Bool);
         $this->checkSymb(2, VarType::Bool);
     }
 
-    public function validateOr() {
+    public function validateOr(): void {
         $this->validateAnd();
     }
 
-    public function validateNot() {
+    public function validateNot(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::Bool);
     }
 
-    public function validateInt2Char() {
+    public function validateInt2Char(): void {
         $this->checkArgCnt(2);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::Int);
     }
 
-    public function validateStri2Int() {
+    public function validateStri2Int(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::String);
         $this->checkSymb(2, VarType::Int);
     }
 
-    public function validateRead() {
+    public function validateRead(): void {
         $this->checkArgCnt(2);
         $this->checkVar(0);
         $this->checkLabel(1);
@@ -253,77 +251,77 @@ class Instruction {
         }
     }
 
-    public function validateWrite() {
+    public function validateWrite(): void {
         $this->checkArgCnt(1);
         $this->checkSymbAny(0);
     }
 
-    public function validateConcat() {
+    public function validateConcat(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::String);
         $this->checkSymb(2, VarType::String);
     }
 
-    public function validateStrLen() {
+    public function validateStrLen(): void {
         $this->checkArgCnt(2);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::String);
     }
 
-    public function validateGetChar() {
+    public function validateGetChar(): void {
         $this->checkArgCnt(3);
         $this->checkVar(0);
         $this->checkSymb(1, VarType::String);
         $this->checkSymb(2, VarType::Int);
     }
 
-    public function validateSetChar() {
+    public function validateSetChar(): void {
         $this->validateGetChar();
     }
 
-    public function validateType() {
+    public function validateType(): void {
         $this->checkArgCnt(2);
         $this->checkVar(0);
         $this->checkSymbAny(1);
     }
 
-    public function validateLabel() {
+    public function validateLabel(): void {
         $this->checkArgCnt(1);
         $this->checkLabel(0);
     }
 
-    public function validateJump() {
+    public function validateJump(): void {
         $this->checkArgCnt(1);
         $this->checkLabel(0);
     }
 
-    public function validateJumpIfEq() {
+    public function validateJumpIfEq(): void {
         $this->checkArgCnt(3);
         $this->checkLabel(0);
         $this->checkSymbAny(1);
         $this->checkSymbAny(2);
     }
 
-    public function validateJumpIfNEq() {
+    public function validateJumpIfNEq(): void {
         $this->validateJumpIfEq();
     }
 
-    public function validateExit() {
+    public function validateExit(): void {
         $this->checkArgCnt(1);
         $this->checkSymb(0, VarType::Int);
     }
 
-    public function validateDPrint() {
+    public function validateDPrint(): void {
         $this->checkArgCnt(1);
         $this->checkSymbAny(0);
     }
 
-    public function validateBreak() {
+    public function validateBreak(): void {
         $this->checkArgCnt(0);
     }
 
-    public function checkVar(int $arg) {
+    public function checkVar(int $arg): void {
         if (!($this->args[$arg] instanceof Variable)) {
             throw new InterpreterException(
                 "Invalid argument type for argument "
@@ -336,7 +334,7 @@ class Instruction {
         }
     }
 
-    public function checkSymbAny(int $arg) {
+    public function checkSymbAny(int $arg): void {
         $a = $this->args[$arg];
         if (!($a instanceof Variable) && !($a instanceof Literal)) {
             throw new InterpreterException(
@@ -350,7 +348,7 @@ class Instruction {
         }
     }
 
-    public function checkSymb(int $arg, VarType $type) {
+    public function checkSymb(int $arg, VarType $type): void {
         $a = $this->args[$arg];
         if ($a instanceof Variable) {
             return;
@@ -372,7 +370,7 @@ class Instruction {
         );
     }
 
-    public function checkLabel(int $arg) {
+    public function checkLabel(int $arg): void {
         if (!is_string($this->args[$arg])) {
             throw new InterpreterException(
                 "Invalid argument type for argument "
@@ -385,7 +383,7 @@ class Instruction {
         }
     }
 
-    public function checkSame(int $arg1, int $arg2) {
+    public function checkSame(int $arg1, int $arg2): void {
         $a1 = $this->args[$arg1];
         $a2 = $this->args[$arg2];
         if ($a1 instanceof Literal && $a2 instanceof Literal) {
@@ -404,7 +402,7 @@ class Instruction {
         }
     }
 
-    public function checkNotType(int $arg, VarType $type) {
+    public function checkNotType(int $arg, VarType $type): void {
         $a = $this->args[$arg];
         if ($a instanceof Literal && $a->type == $type) {
             throw new InterpreterException(
@@ -420,7 +418,7 @@ class Instruction {
         }
     }
 
-    public function checkArgCnt(int $cnt) {
+    public function checkArgCnt(int $cnt): void {
         if (count($this->args) != $cnt) {
             throw new InterpreterException(
                 "Invalid number of arguments for instruciton "

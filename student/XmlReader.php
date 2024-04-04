@@ -6,11 +6,11 @@ use DOMDocument;
 use DOMElement;
 use Exception;
 
-/** @var array<int, Instruction> */
-function read_instructions(
-    DOMDocument $xml,
-    /** @var array<string, int> */ array &$jumpTable
-): array {
+/**
+ * @param array<string, int> $jumpTable
+ * @return array<int, Instruction>
+ */
+function read_instructions(DOMDocument $xml, array &$jumpTable): array {
     if ($xml->firstElementChild->tagName != "program") {
         throw new InterpreterException(
             "Invalid top level node. Expected 'program' but it was '"
@@ -78,17 +78,15 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
         );
     }
 
-    try {
-        $order = (int)$orderS - 1;
-    } catch (Exception $e) {
+    if (!is_numeric($orderS)) {
         throw new InterpreterException(
             "Invalid order. Expected number but it was '"
                 .$orderS
                 ."',",
-            ErrorCode::BadXml,
-            $e
+            ErrorCode::BadXml
         );
     }
+    $order = (int)$orderS - 1;
 
     if ($order < 0) {
         throw new InterpreterException(
@@ -284,9 +282,6 @@ function _read_bool(string $value): Literal {
 }
 
 function _read_string(string $value): Literal {
-    if ($value === null) {
-        return new Literal("");
-    }
     $res = "";
     $first = true;
     $escs = explode("\\", $value);

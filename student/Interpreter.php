@@ -504,7 +504,7 @@ class Interpreter extends AbstractInterpreter {
         return true;
     }
 
-    private function jumpTo(string $label) {
+    private function jumpTo(string $label): void {
         if (!isset($this->jumpTable[$label])) {
             throw new InterpreterException(
                 "Cannot jump to label ".$label.". There is no such label.",
@@ -524,7 +524,7 @@ class Interpreter extends AbstractInterpreter {
                 "Invalid operand type. Expected "
                     .$type->name
                     ." but have "
-                    .$val->type
+                    .$val->type->name
                     .".",
                 ErrorCode::BadOperand
             );
