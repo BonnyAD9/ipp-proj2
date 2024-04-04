@@ -129,7 +129,7 @@ class Memory {
             throw new InterpreterException(
                 "Cannot declare variable "
                     .$name
-                    ." from local frame. There is no local frame",
+                    ." in local frame. There is no local frame.",
                 55
             );
         }
@@ -170,12 +170,13 @@ class Memory {
         switch ($name->frame) {
             case FrameType::Global:
                 $this->setGlobal($name->name, $value);
+                return;
             case FrameType::Local:
                 $this->setLocal($name->name, $value);
-                break;
+                return;
             case FrameType::Temporary:
                 $this->setTmp($name->name, $value);
-                break;
+                return;
         }
         throw new InterpreterException("Invalid variable frame");
     }
@@ -184,12 +185,13 @@ class Memory {
         switch ($name->frame) {
             case FrameType::Global:
                 $this->declGlobal($name->name);
+                return;
             case FrameType::Local:
                 $this->declLocal($name->name);
-                break;
+                return;
             case FrameType::Temporary:
                 $this->declTmp($name->name);
-                break;
+                return;
         }
         throw new InterpreterException("Invalid variable frame");
     }

@@ -2,10 +2,10 @@
 
 namespace IPP\Student;
 
-use Exception;
+use IPP\Core\Exception\IPPException;
 use Throwable;
 
-class InterpreterException extends Exception {
+class InterpreterException extends IPPException {
     public function __construct(
         string $message = "",
         int $code = 99,

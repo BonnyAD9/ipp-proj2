@@ -31,6 +31,12 @@ class Frame {
     }
 
     public function declVariable(string $name) {
+        if (!isset($this->variables[$name])) {
+            throw new InterpreterException(
+                "Cannot declare variable '".$name."'. It is already declared.",
+                52
+            );
+        }
         $this->variables[$name] = new Literal(null);
     }
 

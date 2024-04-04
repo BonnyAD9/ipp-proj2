@@ -186,7 +186,7 @@ function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
         case "nil":
             return _read_nil($node->nodeValue);
         case "int":
-            return _read_var($node->nodeValue);
+            return _read_int($node->nodeValue);
         case "bool":
             return _read_bool($node->nodeValue);
         case "string":
@@ -227,11 +227,11 @@ function _read_var(string $value): Variable {
 
     switch ($split[0]) {
         case "GF":
-            return new Variable(FrameType::Global, $split[2]);
+            return new Variable(FrameType::Global, $split[1]);
         case "LF":
-            return new Variable(FrameType::Local, $split[2]);
+            return new Variable(FrameType::Local, $split[1]);
         case "TF":
-            return new Variable(FrameType::Temporary, $split[2]);
+            return new Variable(FrameType::Temporary, $split[1]);
         default:
             throw new InterpreterException(
                 "Invalid frame '".$split[0]."'. Expected 'GF', 'LF' or 'TF'.",

@@ -31,30 +31,8 @@ class Interpreter extends AbstractInterpreter {
             $this->source->getDOMDocument(),
             $this->jumpTable
         );
-        try {
-        } catch (InterpreterException $ex) {
-            $this->stderr->writeString($ex->getMessage());
-            return $ex->getCode();
-        } catch (IPPException $ex) {
-            $this->stderr->writeString($ex->getMessage());
-            return $ex->getCode();
-        } catch (Exception $ex) {
-            $this->stderr->writeString($ex->getMessage());
-            return 99;
-        }
 
-        try {
-            while ($this->runNext()) {}
-        } catch (InterpreterException $ex) {
-            $this->stderr->writeString($ex->getMessage());
-            return $ex->getCode();
-        } catch (IPPException $ex) {
-            $this->stderr->writeString($ex->getMessage());
-            return $ex->getCode();
-        } catch (Exception $ex) {
-            $this->stderr->writeString($ex->getMessage());
-            return 99;
-        }
+        while ($this->runNext()) {}
 
         return $this->exitCode;
     }
