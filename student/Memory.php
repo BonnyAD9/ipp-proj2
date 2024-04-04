@@ -145,7 +145,8 @@ class Memory {
     public function popVar(): Literal {
         if (count($this->stack) === 0) {
             throw new InterpreterException(
-                "Cannot read variable from stack. The stack is empty."
+                "Cannot read variable from stack. The stack is empty.",
+                56
             );
         }
         return array_pop($this->stack);

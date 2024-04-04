@@ -12,6 +12,12 @@ class Frame {
 
     public function getVariable(string $name) {
         if (isset($this->variables[$name])) {
+            if ($this->variables[$name]->type == VarType::Unset) {
+                throw new InterpreterException(
+                    "Cannot read variable ".$name.". It has undefined value.",
+                    56
+                );
+            }
             return $this->variables[$name];
         }
         throw new InterpreterException(
@@ -37,10 +43,11 @@ class Frame {
                 52
             );
         }
-        $this->variables[$name] = new Literal(null);
+        $this->variables[$name] = (new Literal(null))->unset();
     }
 
     public function isDecl(string $name): bool {
-        return isset($this->variables[$name]);
+        return isset($this->variables[$name])
+            && $this->variables[$name]->type != VarType::Unset;
     }
 }

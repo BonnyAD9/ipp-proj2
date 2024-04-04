@@ -19,4 +19,10 @@ class Literal {
             $this->type = VarType::Nil;
         }
     }
+
+    public function unset(): Literal {
+        $this->value = null;
+        $this->type = VarType::Unset;
+        return $this;
+    }
 }

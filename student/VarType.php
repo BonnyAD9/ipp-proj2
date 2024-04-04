@@ -7,4 +7,5 @@ enum VarType {
     case Int;
     case Bool;
     case String;
+    case Unset;
 }
