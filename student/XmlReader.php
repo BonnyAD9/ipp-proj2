@@ -174,19 +174,21 @@ function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
         );
     }
 
+    $value = trim($node->nodeValue);
+
     switch ($type) {
         case "label":
-            return _read_label($node->nodeValue);
+            return _read_label($value);
         case "var":
-            return _read_var($node->nodeValue);
+            return _read_var($value);
         case "nil":
-            return _read_nil($node->nodeValue);
+            return _read_nil($value);
         case "int":
-            return _read_int($node->nodeValue);
+            return _read_int($value);
         case "bool":
-            return _read_bool($node->nodeValue);
+            return _read_bool($value);
         case "string":
-            return _read_string($node->nodeValue);
+            return _read_string($value);
         default:
             throw new InterpreterException(
                 "Invalid argument type. Expected 'label', 'var', 'nil', 'int',"
