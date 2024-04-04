@@ -490,14 +490,13 @@ class Interpreter extends AbstractInterpreter {
     }
 
     private function jumpTo(string $label) {
-        $pos = $this->jumpTable[$label];
-        if ($pos === null) {
+        if (!isset($this->jumpTable[$label])) {
             throw new InterpreterException(
                 "Cannot jump to label ".$label.". There is no such label.",
                 52
             );
         }
-        $this->nextInst = $pos;
+        $this->nextInst = $this->jumpTable[$label];
     }
 
     private function getValueType(Literal|Variable $var, VarType $type): null|int|string|bool {

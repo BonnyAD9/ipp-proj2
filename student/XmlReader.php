@@ -45,7 +45,7 @@ function read_instructions(
             );
         }
         $insts[$idx] = $inst;
-        if ($inst->opcode == "LABEL" && is_string($inst->args[0])) {
+        if ($inst->opcode == OpCode::Label) {
             $jumpTable[$inst->args[0]] = $idx;
         }
     }
