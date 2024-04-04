@@ -2,7 +2,7 @@
 
 namespace IPP\Student;
 
-enum OpCode {
+enum OpCode: string {
     case Move = "MOVE";
     case CreateFrame = "CREATEFRAME";
     case PushFrame = "PUSHFRAME";

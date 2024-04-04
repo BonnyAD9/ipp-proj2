@@ -35,10 +35,7 @@ function read_instructions(
 
     foreach ($xml->firstElementChild->childNodes as $node) {
         if (!($node instanceof DOMElement)) {
-            throw new InterpreterException(
-                "Expected element nodes inside the node program",
-                32,
-            );
+            continue;
         }
         $idx = 0;
         $inst = _read_instruction($node, $idx);
@@ -124,10 +121,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
 
     foreach ($node->childNodes as $node) {
         if (!($node instanceof DOMElement)) {
-            throw new InterpreterException(
-                "Expected element nodes inside of instruction node.",
-                32
-            );
+            continue;
         }
         $idx = 0;
         $arg = _read_arg($node, $idx);
@@ -145,7 +139,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
         }
     }
 
-    if (count($args) != $max) {
+    if (count($args) != $max + 1) {
         throw new InterpreterException(
             "Invalid arguments. Some argument numbers are skipped.",
             32
@@ -246,19 +240,19 @@ function _read_var(string $value): Variable {
     }
 }
 
-function _read_nil(string $value): null {
+function _read_nil(string $value): Literal {
     if ($value != "nil") {
         throw new InterpreterException(
             "Invalid nil value. Expected 'nil' but it was '".$value."'.",
             32,
         );
     }
-    return null;
+    return new Literal(null);
 }
 
-function _read_int(string $value): int {
+function _read_int(string $value): Literal {
     try {
-        return (int)$value;
+        return new Literal((int)$value);
     } catch (Exception $e) {
         throw new InterpreterException(
             "Invalid int value '".$value."'.",
@@ -268,12 +262,12 @@ function _read_int(string $value): int {
     }
 }
 
-function _read_bool(string $value): bool {
+function _read_bool(string $value): Literal {
     switch ($value) {
         case "true":
-            return true;
+            return new Literal(true);
         case "false":
-            return false;
+            return new Literal(false);
         default:
             throw new InterpreterException(
                 "Invalid bool value. Expected 'true' of 'false' but it was '"
@@ -284,6 +278,46 @@ function _read_bool(string $value): bool {
     }
 }
 
-function _read_string(string $value): string {
-    return $value ?? "";
+function _read_string(string $value): Literal {
+    if ($value === null) {
+        return new Literal("");
+    }
+    $res = "";
+    $first = true;
+    $escs = explode("\\", $value);
+    foreach ($escs as $esc) {
+        if ($first) {
+            $first = false;
+            $res .= $esc;
+            continue;
+        }
+
+        if (strlen($esc) < 3) {
+            throw new InterpreterException(
+                "Invalid string escape '".$esc."'. It is too short",
+                32
+            );
+        }
+
+        $echr = substr($esc, 0, 3);
+        $chr = null;
+        try {
+            $chr = mb_chr((int)$echr);
+        } catch (Exception $e) {
+            throw new InterpreterException(
+                "Invalid string escape '".$esc."'. It is not integer",
+                32,
+                $e
+            );
+        }
+        if (!$chr) {
+            throw new InterpreterException(
+                "Invalid string escape '".$esc."'. It is not valid char",
+                32
+            );
+        }
+        $res .= $chr;
+        $res .= substr($esc, 3);
+    }
+    return new Literal($res);
 }

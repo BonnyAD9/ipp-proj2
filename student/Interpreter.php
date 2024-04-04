@@ -2,6 +2,8 @@
 
 namespace IPP\Student;
 
+require_once("XmlReader.php");
+
 use IPP\Core\AbstractInterpreter;
 use IPP\Core\Exception\IPPException;
 use IPP\Core\Exception\NotImplementedException;
@@ -21,15 +23,15 @@ class Interpreter extends AbstractInterpreter {
     public function execute(): int {
         $this->memory = new Memory();
         $this->jumpTable = [];
-        $this->nextInst = 1;
+        $this->nextInst = 0;
         $this->callStack = [];
         $this->exitCode = 0;
 
+        $this->instructions = read_instructions(
+            $this->source->getDOMDocument(),
+            $this->jumpTable
+        );
         try {
-            $this->instructions = read_instructions(
-                $this->source->getDOMDocument(),
-                $this->jumpTable
-            );
         } catch (InterpreterException $ex) {
             $this->stderr->writeString($ex->getMessage());
             return $ex->getCode();
@@ -54,15 +56,15 @@ class Interpreter extends AbstractInterpreter {
             return 99;
         }
 
-        throw new NotImplementedException;
+        return $this->exitCode;
     }
 
     private function runNext(): bool {
-        $inst = $this->instructions[$this->nextInst];
-        if ($inst === null) {
+        if (!isset($this->instructions[$this->nextInst])) {
             // end of code
             return false;
         }
+        $inst = $this->instructions[$this->nextInst];
         ++$this->nextInst;
 
         switch ($inst->opcode) {

@@ -252,7 +252,7 @@ class Instruction {
 
     public function validateWrite() {
         $this->checkArgCnt(1);
-        $this->checkSymbAny(1);
+        $this->checkSymbAny(0);
     }
 
     public function validateConcat() {
@@ -326,7 +326,7 @@ class Instruction {
                 "Invalid argument type for argument "
                     .$arg
                     ." of instruction "
-                    .$this->opcode
+                    .$this->opcode->value
                     .". Expected variable.",
                 53
             );
@@ -340,7 +340,7 @@ class Instruction {
                 "Invalid argument type for argument "
                     .$arg
                     ." of instruction "
-                    .$this->opcode
+                    .$this->opcode->value
                     .". Expected variable or literal.",
                 53
             );
@@ -361,7 +361,7 @@ class Instruction {
             "Invalid argument type for argument "
                 .$arg
                 ." of instruction "
-                .$this->opcode
+                .$this->opcode->value
                 .". Expected variable or literal of type "
                 .$type
                 .".",
@@ -375,7 +375,7 @@ class Instruction {
                 "Invalid argument type for argument "
                     .$arg
                     ." of instruction "
-                    .$this->opcode
+                    .$this->opcode->value
                     .". Expected label.",
                 53
             );
@@ -389,7 +389,7 @@ class Instruction {
             if ($a1->type != $a2->type) {
                 throw new InterpreterException(
                     "Invalid argument types to instruction "
-                        .$this->opcode
+                        .$this->opcode->value
                         ."Arguments "
                         .$arg1
                         ." and "
@@ -406,7 +406,7 @@ class Instruction {
         if ($a instanceof Literal && $a->type == $type) {
             throw new InterpreterException(
                 "Invalid argument type to instruction "
-                    .$this->opcode
+                    .$this->opcode->value
                     ."Argument "
                     .$arg
                     ." may not be of type "
@@ -421,7 +421,7 @@ class Instruction {
         if (count($this->args) != $cnt) {
             throw new InterpreterException(
                 "Invalid number of arguments for instruciton "
-                    .$this->opcode
+                    .$this->opcode->value
                     .". Expected "
                     .$cnt
                     ." but have "
