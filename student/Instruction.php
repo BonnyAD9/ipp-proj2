@@ -363,7 +363,7 @@ class Instruction {
                 ." of instruction "
                 .$this->opcode->value
                 .". Expected variable or literal of type "
-                .$type
+                .$type->name
                 .".",
             53
         );
@@ -410,7 +410,7 @@ class Instruction {
                     ."Argument "
                     .$arg
                     ." may not be of type "
-                    .$type
+                    .$type->name
                     .".",
                 53
             );
