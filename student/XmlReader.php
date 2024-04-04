@@ -7,7 +7,10 @@ use DOMElement;
 use Exception;
 
 /** @var array<int, Instruction> */
-function read_instructions(DOMDocument $xml): array {
+function read_instructions(
+    DOMDocument $xml,
+    /** @var array<string, int> */ array &$jumpTable
+): array {
     if ($xml->firstElementChild->tagName != "program") {
         throw new InterpreterException(
             "Invalid top level node. Expected 'program' but it was '"
@@ -48,6 +51,9 @@ function read_instructions(DOMDocument $xml): array {
         $insts[$idx] = $inst;
         if ($idx > $max) {
             $max = $idx;
+        }
+        if ($inst->opcode == "LABEL" && is_string($inst->args[0])) {
+            $jumpTable[$inst->args[0]] = $idx;
         }
     }
 
@@ -100,14 +106,17 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
         );
     }
 
-    $opcode = $node->getAttribute("opcode");
-    if (!$opcode) {
+    $opcodeS = $node->getAttribute("opcode");
+    if (!$opcodeS) {
         throw new InterpreterException(
             "Invalid instruciton, missing opcode.",
             32
         );
     }
-    $opcode = strtoupper($opcode);
+    $opcode = OpCode::tryFrom(strtoupper($opcodeS));
+    if (!$opcode) {
+        throw new InterpreterException("Unknown opcode '".$opcodeS."'.", 32);
+    }
 
     /** @var array<int, Literal|string|Variable> */
     $args = [];
