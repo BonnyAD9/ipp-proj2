@@ -198,6 +198,9 @@ class Interpreter extends AbstractInterpreter {
     private function iIDiv(Instruction $inst): bool {
         $a = $this->getValueType($inst->args[1], VarType::Int);
         $b = $this->getValueType($inst->args[2], VarType::Int);
+        if ($b == 0) {
+            throw new InterpreterException("Cannot divide by 0", 57);
+        }
         $this->memory->setVar($inst->args[0], new Literal(intdiv($a, $b)));
         return true;
     }
