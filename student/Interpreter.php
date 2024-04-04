@@ -382,6 +382,12 @@ class Interpreter extends AbstractInterpreter {
         $v = $inst->args[0];
         $s = $this->getValueType($inst->args[1], VarType::String);
         $i = $this->getValueType($inst->args[2], VarType::Int);
+        if ($i >= strlen($s)) {
+            throw new InterpreterException(
+                "Invalid index ".$i." to string of length ".strlen($s),
+                58
+            );
+        }
         $this->memory->setVar($v, new Literal($s[$i]));
         return true;
     }
