@@ -16,16 +16,16 @@ function read_instructions(
             "Invalid top level node. Expected 'program' but it was '"
                 .$xml->firstChild->nodeName
                 ."'.",
-            32
+            ErrorCode::BadXml
         );
     }
 
     if ($xml->firstElementChild->getAttribute("language") != "IPPcode24") {
         throw new InterpreterException(
             "Invalid program language. Expected 'IPPcode24' but it was '"
-                .$xml->firstChild->attributes->getNamedItem("language")->nodeValue
+                .$xml->firstElementChild->getAttribute("language")
                 ."'.",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -41,7 +41,7 @@ function read_instructions(
         if (isset($insts[$idx])) {
             throw new InterpreterException(
                 "Invalid order, ".$idx." is specified multiple times.",
-                32
+                ErrorCode::BadXml
             );
         }
         $insts[$idx] = $inst;
@@ -64,9 +64,9 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
     if ($node->tagName != "instruction") {
         throw new InterpreterException(
             "Invalid node. Expected 'instruction' but it was '"
-                .$node->nodeName
+                .$node->tagName
                 ."'.",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -74,7 +74,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
     if (!$orderS) {
         throw new InterpreterException(
             "Invalid instruction, missing order.",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -85,7 +85,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
             "Invalid order. Expected number but it was '"
                 .$orderS
                 ."',",
-            32,
+            ErrorCode::BadXml,
             $e
         );
     }
@@ -95,7 +95,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
             "Invalid order. Expected positive integer but it was '"
                 .$order
                 ."',",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -103,12 +103,15 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
     if (!$opcodeS) {
         throw new InterpreterException(
             "Invalid instruciton, missing opcode.",
-            32
+            ErrorCode::BadXml
         );
     }
     $opcode = OpCode::tryFrom(strtoupper($opcodeS));
     if (!$opcode) {
-        throw new InterpreterException("Unknown opcode '".$opcodeS."'.", 32);
+        throw new InterpreterException(
+            "Unknown opcode '".$opcodeS."'.",
+            ErrorCode::BadXml
+        );
     }
 
     /** @var array<int, Literal|string|Variable> */
@@ -126,7 +129,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
                 "Invalid arguments. Argument "
                     .$idx
                     ." is specified multiple times",
-                32
+                ErrorCode::BadXml
             );
         }
         $args[$idx] = $arg;
@@ -138,7 +141,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
     if (count($args) != $max + 1) {
         throw new InterpreterException(
             "Invalid arguments. Some argument numbers are skipped.",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -146,7 +149,7 @@ function _read_instruction(DOMElement $node, int &$order): Instruction {
 }
 
 function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
-    switch ($node->nodeName) {
+    switch ($node->tagName) {
         case "arg1":
             $order = 0;
             break;
@@ -160,17 +163,17 @@ function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
             throw new InterpreterException(
                 "Invalid argument node, expected 'arg1', 'arg2' or 'arg3' but"
                     ."it was '"
-                    .$node->nodeName
+                    .$node->tagName
                     ."'.",
-                32
+                ErrorCode::BadXml
             );
     }
 
-    $type = $node->attributes->getNamedItem("type")->nodeValue;
+    $type = $node->getAttribute("type");
     if (!$type) {
         throw new InterpreterException(
             "Invalid argument. Missing type of the argument.",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -196,14 +199,17 @@ function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
                     ."'bool' or 'string', but it was '"
                     .$type
                     ."'.",
-                32,
+                ErrorCode::BadXml,
             );
     }
 }
 
 function _read_label(string $value): string {
     if (!$value) {
-        throw new InterpreterException("Invalid label. Missing value.", 32);
+        throw new InterpreterException(
+            "Invalid label. Missing value.",
+            ErrorCode::BadXml
+        );
     }
     return $value;
 }
@@ -213,14 +219,14 @@ function _read_var(string $value): Variable {
     if (count($split) != 2) {
         throw new InterpreterException(
             "Invalid variable '".$value."'. Missing the frame.",
-            32
+            ErrorCode::BadXml
         );
     }
 
     if (!$split[1]) {
         throw new InterpreterException(
             "Invalid variable name. It is empty.",
-            32
+            ErrorCode::BadXml
         );
     }
 
@@ -234,7 +240,7 @@ function _read_var(string $value): Variable {
         default:
             throw new InterpreterException(
                 "Invalid frame '".$split[0]."'. Expected 'GF', 'LF' or 'TF'.",
-                32
+                ErrorCode::BadXml
             );
     }
 }
@@ -243,7 +249,7 @@ function _read_nil(string $value): Literal {
     if ($value != "nil") {
         throw new InterpreterException(
             "Invalid nil value. Expected 'nil' but it was '".$value."'.",
-            32,
+            ErrorCode::BadXml,
         );
     }
     return new Literal(null);
@@ -255,7 +261,7 @@ function _read_int(string $value): Literal {
     } catch (Exception $e) {
         throw new InterpreterException(
             "Invalid int value '".$value."'.",
-            32,
+            ErrorCode::BadXml,
             $e
         );
     }
@@ -272,7 +278,7 @@ function _read_bool(string $value): Literal {
                 "Invalid bool value. Expected 'true' of 'false' but it was '"
                     .$value
                     ."'.",
-                32
+                ErrorCode::BadXml
             );
     }
 }
@@ -294,7 +300,7 @@ function _read_string(string $value): Literal {
         if (strlen($esc) < 3) {
             throw new InterpreterException(
                 "Invalid string escape '".$esc."'. It is too short",
-                32
+                ErrorCode::BadXml
             );
         }
 
@@ -305,14 +311,14 @@ function _read_string(string $value): Literal {
         } catch (Exception $e) {
             throw new InterpreterException(
                 "Invalid string escape '".$esc."'. It is not integer",
-                32,
+                ErrorCode::BadXml,
                 $e
             );
         }
         if (!$chr) {
             throw new InterpreterException(
                 "Invalid string escape '".$esc."'. It is not valid char",
-                32
+                ErrorCode::BadXml
             );
         }
         $res .= $chr;

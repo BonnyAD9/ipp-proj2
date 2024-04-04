@@ -8,9 +8,9 @@ use Throwable;
 class InterpreterException extends IPPException {
     public function __construct(
         string $message = "",
-        int $code = 99,
+        ErrorCode $code = ErrorCode::Other,
         Throwable $previous = null
     ) {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code->value, $previous);
     }
 }

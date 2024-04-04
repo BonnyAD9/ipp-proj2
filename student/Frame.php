@@ -15,14 +15,14 @@ class Frame {
             if ($this->variables[$name]->type == VarType::Unset) {
                 throw new InterpreterException(
                     "Cannot read variable ".$name.". It has undefined value.",
-                    56
+                    ErrorCode::NoValue
                 );
             }
             return $this->variables[$name];
         }
         throw new InterpreterException(
             "Cannot read variable ".$name.". There is no such variable",
-            54
+            ErrorCode::NoVariable
         );
     }
 
@@ -30,7 +30,7 @@ class Frame {
         if (!isset($this->variables[$name])) {
             throw new InterpreterException(
                 "Cannot set variable '".$name."'. The variable doesn't exist.",
-                54
+                ErrorCode::NoVariable
             );
         }
         $this->variables[$name] = $value;
@@ -40,7 +40,7 @@ class Frame {
         if (isset($this->variables[$name])) {
             throw new InterpreterException(
                 "Cannot declare variable '".$name."'. It is already declared.",
-                52
+                ErrorCode::Semantic
             );
         }
         $this->variables[$name] = (new Literal(null))->unset();

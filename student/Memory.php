@@ -45,7 +45,7 @@ class Memory {
                 "Cannot get variable "
                     .$name
                     ." from temporary frame. Temporary frame is not set.",
-                55
+                ErrorCode::NoFrame
             );
         }
         return $this->temporaryFrame->getVariable($name);
@@ -57,7 +57,7 @@ class Memory {
                 "Cannot set variable "
                     .$name
                     ." from temporary frame. Temporary frame is not set.",
-                55
+                ErrorCode::NoFrame
             );
         }
         $this->temporaryFrame->setVariable($name, $value);
@@ -69,7 +69,7 @@ class Memory {
                 "Cannot declare variable "
                     .$name
                     ." in temporary frame. Temporary frame is not set.",
-                55
+                ErrorCode::NoFrame
             );
         }
         $this->temporaryFrame->declVariable($name);
@@ -85,7 +85,7 @@ class Memory {
             throw new InterpreterException(
                 "Cannot push temporary frame to local frames. Temporary frame "
                     ."is not set",
-                55
+                ErrorCode::NoFrame
             );
         }
         array_push($this->localFrames, $this->temporaryFrame);
@@ -95,7 +95,7 @@ class Memory {
         if (count($this->localFrames) === 0) {
             throw new InterpreterException(
                 "Cannot pop local frame. There are no local frames.",
-                55
+                ErrorCode::NoFrame
             );
         }
         $this->temporaryFrame = array_pop($this->localFrames);
@@ -107,7 +107,7 @@ class Memory {
                 "Cannot read variable "
                     .$name
                     ." from local frame. There is no local frame.",
-                55
+                ErrorCode::NoFrame
             );
         }
         return end($this->localFrames)->getVariable($name);
@@ -119,7 +119,7 @@ class Memory {
                 "Cannot set variable "
                     .$name
                     ." from local frame. There is no local frame",
-                55
+                ErrorCode::NoFrame
             );
         }
         end($this->localFrames)->setVariable($name, $value);
@@ -131,7 +131,7 @@ class Memory {
                 "Cannot declare variable "
                     .$name
                     ." in local frame. There is no local frame.",
-                55
+                ErrorCode::NoFrame
             );
         }
         end($this->localFrames)->declVariable($name);
@@ -146,7 +146,7 @@ class Memory {
         if (count($this->stack) === 0) {
             throw new InterpreterException(
                 "Cannot read variable from stack. The stack is empty.",
-                56
+                ErrorCode::NoValue
             );
         }
         return array_pop($this->stack);

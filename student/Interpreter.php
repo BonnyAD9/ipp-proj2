@@ -118,7 +118,10 @@ class Interpreter extends AbstractInterpreter {
             case OpCode::Break:
                 return $this->iBreak($inst);
             default:
-                throw new InterpreterException("Invalid opcode.", 52);
+                throw new InterpreterException(
+                    "Invalid opcode.",
+                    ErrorCode::Semantic
+                );
         }
     }
 
@@ -157,7 +160,7 @@ class Interpreter extends AbstractInterpreter {
         if (count($this->callStack) === 0) {
             throw new InterpreterException(
                 "Cannot return. There are no values in the call stack",
-                52
+                ErrorCode::NoValue
             );
         }
         $this->nextInst = array_pop($this->callStack);
@@ -199,7 +202,10 @@ class Interpreter extends AbstractInterpreter {
         $a = $this->getValueType($inst->args[1], VarType::Int);
         $b = $this->getValueType($inst->args[2], VarType::Int);
         if ($b == 0) {
-            throw new InterpreterException("Cannot divide by 0", 57);
+            throw new InterpreterException(
+                "Cannot divide by 0.",
+                ErrorCode::BadValue
+            );
         }
         $this->memory->setVar($inst->args[0], new Literal(intdiv($a, $b)));
         return true;
@@ -223,8 +229,8 @@ class Interpreter extends AbstractInterpreter {
                 break;
             default:
                 throw new InterpreterException(
-                    "Cannot compare values of type ".$al->type.".",
-                    53
+                    "Cannot compare values of type ".$al->type->name.".",
+                    ErrorCode::BadOperand
                 );
         }
         return true;
@@ -248,8 +254,8 @@ class Interpreter extends AbstractInterpreter {
                 break;
             default:
                 throw new InterpreterException(
-                    "Cannot compare values of type ".$al->type.".",
-                    53
+                    "Cannot compare values of type ".$al->type->name.".",
+                    ErrorCode::BadOperand
                 );
         }
         return true;
@@ -295,7 +301,7 @@ class Interpreter extends AbstractInterpreter {
         if (!$r) {
             throw new InterpreterException(
                 "Invalid unicode code point ".$a.".",
-                57
+                ErrorCode::BadValue
             );
         }
         $this->memory->setVar($v, new Literal($r));
@@ -314,7 +320,7 @@ class Interpreter extends AbstractInterpreter {
                     ." because the string has length "
                     .$len
                     .".",
-                58
+                ErrorCode::StringError
             );
         }
         $r = mb_ord($s[$i]);
@@ -338,7 +344,7 @@ class Interpreter extends AbstractInterpreter {
             default:
                 throw new InterpreterException(
                     "Invalid type ".$inst->args[1]." for instruction read",
-                    53
+                    ErrorCode::BadOperand
                 );
         }
         $this->memory->setVar($v, new Literal($r));
@@ -385,7 +391,7 @@ class Interpreter extends AbstractInterpreter {
         if ($i >= strlen($s)) {
             throw new InterpreterException(
                 "Invalid index ".$i." to string of length ".strlen($s),
-                58
+                ErrorCode::StringError
             );
         }
         $this->memory->setVar($v, new Literal($s[$i]));
@@ -468,7 +474,7 @@ class Interpreter extends AbstractInterpreter {
                 "Invalid exit code "
                     .$c
                     .". It must be between 0 and 9 (inclusive)",
-                57
+                ErrorCode::BadValue
             );
         }
         $this->exitCode = $c;
@@ -502,22 +508,25 @@ class Interpreter extends AbstractInterpreter {
         if (!isset($this->jumpTable[$label])) {
             throw new InterpreterException(
                 "Cannot jump to label ".$label.". There is no such label.",
-                52
+                ErrorCode::Semantic
             );
         }
         $this->nextInst = $this->jumpTable[$label];
     }
 
-    private function getValueType(Literal|Variable $var, VarType $type): null|int|string|bool {
+    private function getValueType(
+        Literal|Variable $var,
+        VarType $type
+    ): null|int|string|bool {
         $val = $this->getValue($var);
         if ($val->type !== $type) {
             throw new InterpreterException(
                 "Invalid operand type. Expected "
-                    .$type
+                    .$type->name
                     ." but have "
                     .$val->type
                     .".",
-                53
+                ErrorCode::BadOperand
             );
         }
         return $val->value;

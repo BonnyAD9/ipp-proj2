@@ -121,7 +121,10 @@ class Instruction {
                 $this->validateBreak();
                 break;
             default:
-                throw new InterpreterException("Invalid op code", 53);
+                throw new InterpreterException(
+                    "Invalid op code",
+                    ErrorCode::Semantic
+                );
         }
     }
 
@@ -245,7 +248,7 @@ class Instruction {
             throw new InterpreterException(
                 "Invalid argument 1 to instruction READ. Argument must be "
                     ."'int', 'string' or 'bool'.",
-                53
+                ErrorCode::BadOperand
             );
         }
     }
@@ -328,7 +331,7 @@ class Instruction {
                     ." of instruction "
                     .$this->opcode->value
                     .". Expected variable.",
-                53
+                ErrorCode::BadOperand
             );
         }
     }
@@ -342,7 +345,7 @@ class Instruction {
                     ." of instruction "
                     .$this->opcode->value
                     .". Expected variable or literal.",
-                53
+                ErrorCode::BadOperand
             );
         }
     }
@@ -365,7 +368,7 @@ class Instruction {
                 .". Expected variable or literal of type "
                 .$type->name
                 .".",
-            53
+            ErrorCode::BadOperand
         );
     }
 
@@ -377,7 +380,7 @@ class Instruction {
                     ." of instruction "
                     .$this->opcode->value
                     .". Expected label.",
-                53
+                ErrorCode::BadOperand
             );
         }
     }
@@ -395,7 +398,7 @@ class Instruction {
                         ." and "
                         .$arg2
                         ." must have the same type",
-                    53
+                    ErrorCode::BadOperand
                 );
             }
         }
@@ -412,7 +415,7 @@ class Instruction {
                     ." may not be of type "
                     .$type->name
                     .".",
-                53
+                ErrorCode::BadOperand
             );
         }
     }
@@ -427,7 +430,7 @@ class Instruction {
                     ." but have "
                     .count($this->args)
                     .".",
-                    53
+                    ErrorCode::BadOperand
             );
         }
     }
