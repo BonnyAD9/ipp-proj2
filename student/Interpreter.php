@@ -43,6 +43,7 @@ class Interpreter extends AbstractInterpreter {
             return false;
         }
         $inst = $this->instructions[$this->nextInst];
+        // echo print_r($inst);
         ++$this->nextInst;
 
         switch ($inst->opcode) {
@@ -500,17 +501,18 @@ class Interpreter extends AbstractInterpreter {
     }
 
     private function getValueType(Literal|Variable $var, VarType $type): null|int|string|bool {
-        if ($var->type !== $type) {
+        $val = $this->getValue($var);
+        if ($val->type !== $type) {
             throw new InterpreterException(
                 "Invalid operand type. Expected "
                     .$type
                     ." but have "
-                    .$var->type
+                    .$val->type
                     .".",
                 53
             );
         }
-        return $var->value;
+        return $val->value;
     }
 
     private function  getValue(Literal|Variable $var): Literal {

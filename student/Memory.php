@@ -16,6 +16,7 @@ class Memory {
         $this->temporaryFrame = null;
         $this->localFrame = null;
         $this->localFrames = [];
+        $this->stack = [];
     }
 
     public function getGlobal(string $name): Literal {

@@ -31,7 +31,6 @@ function read_instructions(
 
     /** @var array<int, Instruction> */
     $insts = [];
-    $max = 0;
 
     foreach ($xml->firstElementChild->childNodes as $node) {
         if (!($node instanceof DOMElement)) {
@@ -46,22 +45,19 @@ function read_instructions(
             );
         }
         $insts[$idx] = $inst;
-        if ($idx > $max) {
-            $max = $idx;
-        }
         if ($inst->opcode == "LABEL" && is_string($inst->args[0])) {
             $jumpTable[$inst->args[0]] = $idx;
         }
     }
 
-    if (count($insts) - 1 != $max) {
-        throw new InterpreterException(
-            "Invalid opcodes. Some opcodes are missing.",
-            32
-        );
+    ksort($insts);
+    $instructions = [];
+    $idx = 0;
+    foreach ($insts as $inst) {
+        $instructions[$idx++] = $inst;
     }
 
-    return $insts;
+    return $instructions;
 }
 
 function _read_instruction(DOMElement $node, int &$order): Instruction {
