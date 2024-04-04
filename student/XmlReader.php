@@ -178,6 +178,7 @@ function _read_arg(DOMElement $node, int &$order): Literal|string|Variable {
 
     switch ($type) {
         case "label":
+        case "type":
             return _read_label($value);
         case "var":
             return _read_var($value);
