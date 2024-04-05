@@ -17,19 +17,19 @@ class Memory {
         $this->stack = [];
     }
 
-    public function getGlobal(string $name): Literal {
+    private function getGlobal(string $name): Literal {
         return $this->globalFrame->getVariable($name);
     }
 
-    public function setGlobal(string $name, Literal $value): void {
+    private function setGlobal(string $name, Literal $value): void {
         $this->globalFrame->setVariable($name, $value);
     }
 
-    public function declGlobal(string $name): void {
+    private function declGlobal(string $name): void {
         $this->globalFrame->declVariable($name);
     }
 
-    public function isDeclGlobal(string $name): bool {
+    private function isDeclGlobal(string $name): bool {
         return $this->globalFrame->isDecl($name);
     }
 
@@ -37,7 +37,7 @@ class Memory {
         $this->temporaryFrame = new Frame();
     }
 
-    public function getTmp(string $name): Literal {
+    private function getTmp(string $name): Literal {
         if ($this->temporaryFrame === null) {
             throw new InterpreterException(
                 "Cannot get variable "
@@ -49,7 +49,7 @@ class Memory {
         return $this->temporaryFrame->getVariable($name);
     }
 
-    public function setTmp(string $name, Literal $value): void {
+    private function setTmp(string $name, Literal $value): void {
         if ($this->temporaryFrame === null) {
             throw new InterpreterException(
                 "Cannot set variable "
@@ -61,7 +61,7 @@ class Memory {
         $this->temporaryFrame->setVariable($name, $value);
     }
 
-    public function declTmp(string $name): void {
+    private function declTmp(string $name): void {
         if ($this->temporaryFrame === null) {
             throw new InterpreterException(
                 "Cannot declare variable "
@@ -73,7 +73,7 @@ class Memory {
         $this->temporaryFrame->declVariable($name);
     }
 
-    public function isDeclTmp(string $name): bool {
+    private function isDeclTmp(string $name): bool {
         return $this->temporaryFrame !== null
             && $this->temporaryFrame->isDecl($name);
     }
@@ -99,7 +99,7 @@ class Memory {
         $this->temporaryFrame = array_pop($this->localFrames);
     }
 
-    public function getLocal(string $name): Literal {
+    private function getLocal(string $name): Literal {
         if (count($this->localFrames) === 0) {
             throw new InterpreterException(
                 "Cannot read variable "
@@ -111,7 +111,7 @@ class Memory {
         return end($this->localFrames)->getVariable($name);
     }
 
-    public function setLocal(string $name, Literal $value): void {
+    private function setLocal(string $name, Literal $value): void {
         if (count($this->localFrames) === 0) {
             throw new InterpreterException(
                 "Cannot set variable "
@@ -123,7 +123,7 @@ class Memory {
         end($this->localFrames)->setVariable($name, $value);
     }
 
-    public function declLocal(string $name): void {
+    private function declLocal(string $name): void {
         if (count($this->localFrames) === 0) {
             throw new InterpreterException(
                 "Cannot declare variable "
@@ -135,7 +135,7 @@ class Memory {
         end($this->localFrames)->declVariable($name);
     }
 
-    public function isDeclLocal(string $name): bool {
+    private function isDeclLocal(string $name): bool {
         return count($this->localFrames) !== 0
             && end($this->localFrames)->isDecl($name);
     }

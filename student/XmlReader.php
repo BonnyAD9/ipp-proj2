@@ -45,15 +45,15 @@ function read_instructions(DOMDocument $xml, array &$jumpTable): array {
             );
         }
         $insts[$idx] = $inst;
-        if ($inst->opcode == OpCode::Label) {
-            $jumpTable[$inst->args[0]] = $idx;
-        }
     }
 
     ksort($insts);
     $instructions = [];
     $idx = 0;
     foreach ($insts as $inst) {
+        if ($inst->opcode == OpCode::Label) {
+            $jumpTable[$inst->args[0]] = $idx;
+        }
         $instructions[$idx++] = $inst;
     }
 
